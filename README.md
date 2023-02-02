@@ -1,1 +1,2 @@
 # Face-Detection
+In Detect faces, I have stored the code for the detect of the faces in the images, it can only detect faces using the opencv and using deep learning find out that it is exactly face or not.
