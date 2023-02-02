@@ -2,16 +2,16 @@ import numpy as np
 import argparse
 import cv2
 
-ap = argparse.ArguementParser()
-ap.add_arguement("-i","--image", required=True, help="path to input image")
-ap.add_arguement("-p","--protxt", required=True, help="path to caffe 'deloy' protxt file")
-ap.add_arguement("-m","--model", required=True, help="path to caffe pre-defined model")
-ap.add_arguement("-c","--confidence", type=float, default=0.5, help="minimum probability to filter weak detections")
+ap = argparse.ArgumentParser()
+ap.add_argument("-i","--image", required=True, help="path to input image")
+ap.add_argument("-p","--prototxt", required=True, help="path to caffe 'deloy' prototxt file")
+ap.add_argument("-m","--model", required=True, help="path to caffe pre-defined model")
+ap.add_argument("-c","--confidence", type=float, default=0.5, help="minimum probability to filter weak detections")
 
 args=vars(ap.parse_args())
 
 print("[INFO] Loding the model...")
-net = cv2.readNetFromCaffe(args["protxt"], args["model"])
+net = cv2.dnn.readNetFromCaffe(args["prototxt"], args["model"])
 
 image = cv2.imread(args["image"])
 (h,w) = image.shape[:2]
@@ -19,7 +19,7 @@ blob = cv2.dnn.blobFromImage(cv2.resize(image, (300,300)), 1.0, (300,300), (104.
 
 print("[INFO] Computing object detections...")
 net.setInput(blob)
-detections = net.net.forward()
+detections = net.forward()
 
 for i in range(0, detections.shape[2]):
     confidence = detections[0, 0, i, 2]
@@ -28,8 +28,7 @@ for i in range(0, detections.shape[2]):
         ( startX, startY, endX, endY) = box.astype("int")
 
         text="{:.2f}%".format(confidence * 100 )
-        y = startY - 10 
-        if startY - 10 > 10 else startY + 10
+        y = startY - 10 if startY - 10 > 10 else startY + 10
 
         cv2.rectangle(image, (startX,startY), (endX, endY), (255, 0, 0), 2)
         cv2.putText(image, text, (startX, y), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 255, 0), 2 )
